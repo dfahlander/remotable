@@ -1,4 +1,4 @@
-# Remotable
+# @Remotable()
 A minimalistic remoting decorator for isomorphic javascript functions running on Browser, Server, WebWorker or ServiceWorker
 
 Work in progress. Still no code. All is in my brain, but it should work as described below.
