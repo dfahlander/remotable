@@ -20,7 +20,7 @@ export async function hello (name) {
 
 ```
 
-Rules for @Remotable functions
+Rules:
 
 1. A @Remotable function must return a Promise or Promise-like (thenable).
 2. A @Remotable is identified by the function's name, and if it is a method, by the Class name + method name. A proxy will look up the same name on the remote.
