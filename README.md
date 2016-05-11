@@ -20,7 +20,8 @@ export async function hello (name) {
 
 ```
 
-Some rules for @Remotable:
+Rules for @Remotable functions
+
 1. A @Remotable function must return a Promise or Promise-like (thenable).
 2. A @Remotable is identified by the function's name, and if it is a method, by the Class name + method name. A proxy will look up the same name on the remote.
 3. Return value must be able to JSON-serialize, or otherwise be serializable by a registered serializer in Remotable.serializers array, which is an array of {replacer: Function, reviver: Function} and works exactly as replacer / reviver functions work in the standard JSON.stringify() and JSON.parse().
