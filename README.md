@@ -5,7 +5,7 @@ Work in progress. Still no code. All is in my brain, but it should work as descr
 
 ## Sample
 
-This sample illustrates what I'm trying to accomplish. You have some piece of isomorphic code that sometimes should run on the server (node), sometimes in the browser, and in some circumstances, in a Web Worker or Service Worker.
+This sample illustrates some piece of isomorphic code that sometimes should run on the server (node), sometimes in the browser, and sometimes in a Web Worker or Service Worker.
 
 ### `hello.js`
 
