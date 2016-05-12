@@ -24,8 +24,8 @@ Rules:
 
 1. A @Remotable function must return a Promise or Promise-like object (thenable).
 2. A @Remotable is identified by class and method name or just function name if not a method.
-3. @Remotable() may be used with or without arbritary arguments `@Remotable(arg1, arg2, ...)`. Any arguments passed to the decorator will be forwarded to  Remotable.onproxy(_class, _function, ...decoratorArgs).
-4. When a @Remotable function is invoked, Remotable.onproxy(_class, _function, options) is called.
+3. When a @Remotable function is invoked, Remotable.onproxy(_class, _function, ...) is called.
+4. @Remotable() may be used with or without arbritary arguments `@Remotable(arg1, arg2, ...)`. Any arguments passed to the decorator will be forwarded to  Remotable.onproxy(_class, _function, ...decoratorArgs).
 5. Configuring the Remoting environment is done by setting Remotable.onproxy = customHandler.
 6. Return value must be able to JSON-serialize, or otherwise be serializable by a registered serializer in Remotable.serializers array, which is an array of {replacer: Function, reviver: Function} and works exactly as replacer / reviver functions work in the standard JSON.stringify() and JSON.parse().
 7. Standardized support for Observable-like objects such as [Rx.Observable](https://github.com/Reactive-Extensions/RxJS) or [ES-observable](https://zenparsing.github.io/es-observable/). An Observable is though returned via a Promise that resolves to an Observable.
