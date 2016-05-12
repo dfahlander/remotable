@@ -29,10 +29,12 @@ Rules:
 5. Configuring the Remoting environment is done by setting Remotable.onproxy = customHandler.
 6. Return value from a @Remotable function must be able to JSON-serialize, or otherwise be serializable by a registered serializer in Remotable.serializers array, which is an array of {replacer: Function, reviver: Function} and works exactly as replacer / reviver functions work in the standard JSON.stringify() and JSON.parse().
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
+
    A: Client requests an observable-returning function.
    B: Server returns an Observable through a Promise.
    C: Remotable-framework at server serializes this to {"__subscribe__": &lt;observableID&gt;}
    D: Remotable-framework at client revives this to an Observable, whos subscribe() method will:
+   
       1. Call "__subscribe__" (&lt;observableID&gt;) remotely on server and expect a stream of values.
    E: Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
 
