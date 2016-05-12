@@ -30,13 +30,13 @@ Rules:
 6. Return value from a @Remotable function must be able to JSON-serialize, or otherwise be serializable by a registered serializer in Remotable.serializers array, which is an array of {replacer: Function, reviver: Function} and works exactly as replacer / reviver functions work in the standard JSON.stringify() and JSON.parse().
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
 
-   1: Client requests an observable-returning function.
-   2: Server returns an Observable through a Promise.
-   3: Remotable-framework at server serializes this to {"__subscribe__": &lt;observableID&gt;}
-   4: Remotable-framework at client revives this to an Observable, whos subscribe() method will:
+   1. Client requests an observable-returning function.
+   2. Server returns an Observable through a Promise.
+   3. Remotable-framework at server serializes this to {"__subscribe__": &lt;observableID&gt;}
+   4. Remotable-framework at client revives this to an Observable, whos subscribe() method will:
    
       1. Call "__subscribe__" (&lt;observableID&gt;) remotely on server and expect a stream of values.
-   5: Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
+   5. Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
 
 ### Browser Code
 
