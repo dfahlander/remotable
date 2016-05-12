@@ -32,10 +32,10 @@ Rules:
 
    1. Client requests an observable-returning function.
    2. Server returns an Observable through a Promise.
-   3. Remotable-framework at server serializes this to {"__subscribe__": &lt;observableID&gt;}
+   3. Remotable-framework at server serializes this to `{"__subscribe__": <observableID>}`
    4. Remotable-framework at client revives this to an Observable, whos subscribe() method will:
    
-      1. Call "__subscribe__" (&lt;observableID&gt;) remotely on server and expect a stream of values.
+      1. Call `"__subscribe__" (<observableID>)` remotely on server and expect a stream of values.
    5. Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
 
 ### Browser Code
