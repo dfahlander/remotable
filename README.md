@@ -13,7 +13,7 @@ This sample illustrates some piece of isomorphic code that sometimes should run 
 
 import Remotable from 'remotable';
 
-@Remotable() // Optionally provide an options argument, such as @Remotable({runat: 'server'})
+@Remotable() // Optionally provide an options argument, such as @Remotable('db')
 export async function hello (name) {
     return `Hello ${name}!`;
 }
