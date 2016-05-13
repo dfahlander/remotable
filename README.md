@@ -27,9 +27,9 @@ Rules:
 
 1. A @remotable method must return a Promise or Promise-like object (thenable).
 2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.proxy(methodName, options) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
-4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.proxy callback.
-5. Configuring the Remoting environment is done by subscriboing to remotable.proxy: `remotable.proxy(callback)`.
+3. When a @remotable function is invoked, remotable.decide(methodName, options) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.decide callback.
+5. Configuring the Remoting environment is done by subscriboing to remotable.decide: `remotable.decide(callback)`.
 6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
 
@@ -60,7 +60,7 @@ socket.on('remotable', msg => remotable.handle(msg));
 
 var whereToRun; // To change dynamically
 
-remotable.proxy((method, options) => {
+remotable.decide((method, options) => {
         if (method === 'Foo.hello') {
             switch (whereToRun) {
                 case 'locally': return false; // Will make it run locally.
