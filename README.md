@@ -1,5 +1,5 @@
 # @remotable
-The smallest and prettiest way to run javascript code on remote nodes.
+The smallest and prettiest way to declare isomorphic javascript code.
 
 Work in progress...
 
