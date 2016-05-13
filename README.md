@@ -1,7 +1,7 @@
 # @remotable
-A minimalistic remoting decorator for isomorphic / universal javascript functions running on Browser, Server, WebWorker or ServiceWorker
+The smallest and prettiest way to run javascript code on remote nodes.
 
-Work in progress. Still no code. All is in my brain, but it should work as described below.
+Work in progress...
 
 ## Sample
 
