@@ -1,7 +1,13 @@
 # @remotable
-A minimalistic remoting decorator for isomorphic / universal javascript functions running on Browser, Server, WebWorker or ServiceWorker
+The smallest and prettiest way to declare isomorphic javascript code.
 
-Work in progress. Still no code. All is in my brain, but it should work as described below.
+In short:
+
+* An ES7 decorator `@remotable` makes a method possible to invoke remotely and at the same time registered for serving it to clients.
+* Can also be used also in ES5/ES6 by preceding function as `var myFunction = remotable(options, function (a,b,c) {...});`
+* No dependencies.
+
+This is a work in progress. Code is complete but not tested at all. Documentation lies within this readme.
 
 ## Sample
 
@@ -27,9 +33,9 @@ Rules:
 
 1. A @remotable method must return a Promise or Promise-like object (thenable).
 2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.decide(methodName, options) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
-4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.decide callback.
-5. Configuring the Remoting environment is done by subscriboing to remotable.decide: `remotable.decide(callback)`.
+3. When a @remotable function is invoked, remotable.onroute(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.onroute callback.
+5. Configuring the Remoting environment is done by subscriboing to remotable.onroute: `remotable.onroute(callback)`.
 6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
 
@@ -60,8 +66,8 @@ socket.on('remotable', msg => remotable.handle(msg));
 
 var whereToRun; // To change dynamically
 
-remotable.decide((method, options) => {
-    if (method === 'Foo.hello') {
+remotable.onroute((options, id, func, thiz, args) => {
+    if (id === 'Foo.hello') {
         switch (whereToRun) {
             case 'locally': return false; // Will make it run locally.
             case 'worker': return msg => worker.postMessage(msg);
@@ -124,7 +130,7 @@ http.listen(3000);
 ```
 
 # Options
-The options argument `@remotable(options)` can be used with custom options to be read from the decide() callback. However, there are a few built-in options to use for simplicity:
+The options argument `@remotable(options)` can be used with custom options to be read from the onroute() callback. However, there are a few built-in options to use for simplicity:
 
 ## runat
 ```js
@@ -135,9 +141,11 @@ In combination with having configured remotable like this:
 
 ```js
 remotable.configure ({
-    local: null,
-    server: msg => socket.emit('remotable', msg),
-    worker: msg => worker.postMessage(msg)
+    roles: {
+        local: null,
+        server: msg => socket.emit('remotable', msg),
+        worker: msg => worker.postMessage(msg)
+    }
 });
 ```
 ... will make the function always run on server.
@@ -215,3 +223,39 @@ remotable.configure({
 
 ```
 
+## remotable.onroute
+
+Register a callback that onroutes if a method should run local or remote, and provides a channel to execute it remotely. This method is a lower-level version of remotable.configure({roles: {...}).
+
+### Syntax
+```ts
+remotable.onroute(callback: (
+    options: Object,    // Options provided to @remotable(options)
+    id: string,         // ClassName + "." + methodName (or id provided in options)
+    func: Function,     // Function to be called (method)
+    thiz: any,          // This-context
+    args: any[]         // arguments
+) =>
+    (msg:string) => void;   // Return a callback taking a string and emitting it to the remote party.
+```
+
+### Sample
+
+```js
+remotable.onroute((options, id, func, thiz, args) => {
+    console.log(JSON.stringify(options)); // For example {"runat": "server"}
+    console.log(id); // For example "Foo.hello"
+    console.log(func.name); // For example "hello".
+    console.log(JSON.stringify(thiz)); // The this-context of the method being called.
+    console.log(JSON.stringify(args)); // The arguments provided to method.
+    
+    if (id === 'Foo.hello') {
+        switch (whereToRun) {
+            case 'locally': return null; // A falsy return value makes it run locally.
+            case 'worker': return msg => worker.postMessage(msg);
+            case 'server': return msg => socket.emit('remotable', msg);
+        }
+    }
+});
+
+```
