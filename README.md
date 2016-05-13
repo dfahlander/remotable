@@ -4,7 +4,7 @@ The smallest and prettiest way to declare isomorphic javascript code.
 In short:
 
 * An ES7 decorator `@remotable` makes a method possible to invoke remotely and at the same time registered for serving it to clients.
-* Can be used also in ES5/ES6 by preceding function as `var myFunction = remotable(options, function (a,b,c) {...});`
+* Can also be used also in ES5/ES6 by preceding function as `var myFunction = remotable(options, function (a,b,c) {...});`
 
 This is a work in progress. Code is complete but not tested at all. Documentation lies within this readme.
 
