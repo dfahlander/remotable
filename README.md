@@ -1,7 +1,11 @@
 # @remotable
 The smallest and prettiest way to declare isomorphic javascript code.
 
-Work in progress...
+In short:
+
+An ES7 decorator `@remotable` makes a method possible to invoke remotely and at the same time registered for serving it to clients.
+
+This is a work in progress. Code is complete but not tested at all. Documentation lies within this readme.
 
 ## Sample
 
