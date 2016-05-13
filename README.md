@@ -196,3 +196,22 @@ remotable.configure({
         worker: msg => worker.postMessage(msg)
 });
 ```js
+
+### Sample2 (where role location vary)
+
+```js
+var worker = new Worker('./worker.js');
+worker.onmessage = ev => remotable.handle(ev.data);
+var socket = io('http://localhost:3000/');
+socket.on('remotable', msg => remotable.handle(msg));
+
+remotable.configure({
+    roles: {
+        db: msg => isOffline ?
+            worker.postMessage(msg) : // If offline, use a local database served from Web worker
+            socket.emit('remotable', msg), // If online, use backend database
+    }
+});
+
+```
+
