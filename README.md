@@ -34,25 +34,9 @@ export class Foo {
     }
 }
 
+new Foo().hello("David"); // Runs locally and returns "Hello David"
+
 ```
-
-Rules:
-
-1. A @remotable method must return a Promise or Promise-like object (thenable).
-2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.onroute(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
-4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.onroute callback.
-5. Configuring the Remoting environment is done by subscriboing to remotable.onroute: `remotable.onroute(callback)`.
-6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
-7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
-
-   1. Client requests an observable-returning function.
-   2. Server returns an Observable through a Promise.
-   3. remotable-framework at server serializes this to `{"__subscribe__": <observableID>}`
-   4. remotable-framework at client revives this to an Observable, whos subscribe() method will:
-   
-      1. Call `"__subscribe__" (<observableID>)` remotely on server and expect a stream of values.
-   5. Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
 
 ### Browser Code
 
@@ -135,6 +119,24 @@ io.on('connection', function(socket){
 http.listen(3000);
 
 ```
+
+# Rules:
+
+1. A @remotable method must return a Promise or Promise-like object (thenable).
+2. A @remotable is identified by class and method name or just function name if not a method.
+3. When a @remotable function is invoked, remotable.onroute(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.onroute callback.
+5. Configuring the Remoting environment is done by subscriboing to remotable.onroute: `remotable.onroute(callback)`.
+6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
+7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
+
+   1. Client requests an observable-returning function.
+   2. Server returns an Observable through a Promise.
+   3. remotable-framework at server serializes this to `{"__subscribe__": <observableID>}`
+   4. remotable-framework at client revives this to an Observable, whos subscribe() method will:
+   
+      1. Call `"__subscribe__" (<observableID>)` remotely on server and expect a stream of values.
+   5. Server will for each emitted value, send a message to the client with the value, identified with the connection ID.
 
 # Options
 The options argument `@remotable(options)` can be used with custom options to be read from the onroute() callback. However, there are a few built-in options to use for simplicity:
