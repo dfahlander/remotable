@@ -9,6 +9,13 @@ In short:
 
 This is a work in progress. Code is complete but not tested at all. Documentation lies within this readme.
 
+## Use Cases
+
+1. Page rendering on client or server depending on state.
+2. Database access from indexedDB when offline, from ServiceWorker when present, or from a backend database when online
+3. Just a way to declare remote functions that will always be remote - an alternate way to REST.
+4. Run a javascript stored procedure in Postgres. Declare it in common code. On client delegate it to server. On server, delegate it further to the database engine.
+
 ## Sample
 
 This sample illustrates some piece of isomorphic code that sometimes should run on the server (node), sometimes in the browser, and sometimes in a Web Worker or Service Worker.
