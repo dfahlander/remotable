@@ -13,21 +13,24 @@ This sample illustrates some piece of isomorphic code that sometimes should run 
 
 import remotable from 'remotable';
 
-@remotable() // Optionally provide an options argument, such as @remotable('db')
-export async function hello (name) {
-    return `Hello ${name}!`;
+export class Foo {
+
+    @remotable() // Optionally provide an options argument, such as @remotable({runat: 'worker'})
+    async function hello (name) {
+        return `Hello ${name}!`;
+    }
 }
 
 ```
 
 Rules:
 
-1. A @remotable function must return a Promise or Promise-like object (thenable).
+1. A @remotable method must return a Promise or Promise-like object (thenable).
 2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.onproxy(_class, _function, ...) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
-4. @remotable() may be used with or without arbritary arguments `@remotable(arg1, arg2, ...)`. Any arguments passed to the decorator will be forwarded to  remotable.onproxy(_class, _function, ...decoratorArgs).
-5. Configuring the Remoting environment is done by setting remotable.onproxy = customHandler.
-6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered serializer in remotable.serializers array, which is an array of {replacer: Function, reviver: Function} and works exactly as replacer / reviver functions work in the standard JSON.stringify() and JSON.parse().
+3. When a @remotable function is invoked, remotable.proxy(methodName, options) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.proxy callback.
+5. Configuring the Remoting environment is done by subscriboing to remotable.proxy: `remotable.proxy(callback)`.
+6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
 
    1. Client requests an observable-returning function.
@@ -57,9 +60,8 @@ socket.on('remotable', msg => remotable.handle(msg));
 
 var whereToRun; // To change dynamically
 
-remotable.configure({
-    onproxy: (_class, _function, options) => {
-        if (_function.name === 'hello') {
+remotable.proxy((method, options) => {
+        if (method === 'Foo.hello') {
             switch (whereToRun) {
                 case 'locally': return false; // Will make it run locally.
                 case 'worker': return msg => worker.postMessage(msg);
@@ -70,18 +72,19 @@ remotable.configure({
 });
 
 whereToRun = 'locally';
-hello ("David").then(greeting => {
+var foo = new Foo();
+foo.hello ("David").then(greeting => {
     alert (`hello returned: ${greeting} (executed locally)`);
     
     // Now, let's execute it on the Web Worker:
     whereToRun = "worker";
-    return hello ("David");
+    return foo.hello ("David");
 }).then(greeting => {
     alert (`hello returned: ${greeting} (executed in worker.js)`);
     
     // Now, let's execute it on the server:
     whereToRun = "server";
-    return hello ("David");
+    return foo.hello ("David");
 }).then(greeting => {
     alert (`hello returned: ${greeting} (executed at server)`);
 }).catch(e => {
@@ -94,7 +97,7 @@ hello ("David").then(greeting => {
 
 ```js
 import remotable from 'remotable';
-import {hello} from './hello';
+import {Foo} from './hello';
 
 onmessage = ev => {
     remotable.handle(ev.data, response => postMessage(response));
@@ -105,7 +108,7 @@ onmessage = ev => {
 ### Server
 ```js
 import remotable from 'remotable';
-import {hello} from './hello';
+import {Foo} from './hello';
 
 var app = require('express')();
 var http = require('http').Server(app);
