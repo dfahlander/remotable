@@ -61,12 +61,11 @@ socket.on('remotable', msg => remotable.handle(msg));
 var whereToRun; // To change dynamically
 
 remotable.decide((method, options) => {
-        if (method === 'Foo.hello') {
-            switch (whereToRun) {
-                case 'locally': return false; // Will make it run locally.
-                case 'worker': return msg => worker.postMessage(msg);
-                case 'server': return msg => socket.emit('remotable', msg);
-            }
+    if (method === 'Foo.hello') {
+        switch (whereToRun) {
+            case 'locally': return false; // Will make it run locally.
+            case 'worker': return msg => worker.postMessage(msg);
+            case 'server': return msg => socket.emit('remotable', msg);
         }
     }
 });
