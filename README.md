@@ -1,5 +1,5 @@
 # @remotable
-The smallest and prettiest way to declare isomorphic javascript code.
+The smallest and prettiest way to declare isomorphic javascript code or code that may run on a remote location such as nodejs, web worker, service worker or within a postgres database engine.
 
 In short:
 
