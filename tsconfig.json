@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "module": "commonjs",
+        "target": "es5",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "outDir": "tsout",
+        "sourceRoot": "lib"
+    },
+    "files": [
+        "lib/**/*.js",
+        "lib/**/*.ts",
+        "spec/**/*.ts",
+        "spec/**/*.js"
+    ]
+}
