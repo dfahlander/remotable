@@ -33,7 +33,7 @@ Rules:
 
 1. A @remotable method must return a Promise or Promise-like object (thenable).
 2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.decide(methodName, options) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+3. When a @remotable function is invoked, remotable.decide(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
 4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.decide callback.
 5. Configuring the Remoting environment is done by subscriboing to remotable.decide: `remotable.decide(callback)`.
 6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
@@ -66,8 +66,8 @@ socket.on('remotable', msg => remotable.handle(msg));
 
 var whereToRun; // To change dynamically
 
-remotable.decide((method, options) => {
-    if (method === 'Foo.hello') {
+remotable.decide((options, id, func, thiz, args) => {
+    if (id === 'Foo.hello') {
         switch (whereToRun) {
             case 'locally': return false; // Will make it run locally.
             case 'worker': return msg => worker.postMessage(msg);
@@ -141,9 +141,11 @@ In combination with having configured remotable like this:
 
 ```js
 remotable.configure ({
-    local: null,
-    server: msg => socket.emit('remotable', msg),
-    worker: msg => worker.postMessage(msg)
+    roles: {
+        local: null,
+        server: msg => socket.emit('remotable', msg),
+        worker: msg => worker.postMessage(msg)
+    }
 });
 ```
 ... will make the function always run on server.
@@ -221,3 +223,32 @@ remotable.configure({
 
 ```
 
+## remotable.decide
+
+Register a callback that decides if a method should run local or remote, and provides a channel to execute it remotely. This method is a lower-level version of remotable.configure({roles: {...}).
+
+### Syntax
+```ts
+remotable.decide(callback: (options: Object, id: string, func: Function, thiz: any, args: any[]) => (msg:string) => void;
+```
+
+### Sample
+
+```js
+remotable.decide((options, id, func, thiz, args) => {
+    console.log(JSON.stringify(options)); // For example {"runat": "server"}
+    console.log(id); // For example "Foo.hello"
+    console.log(func.name); // For example "hello".
+    console.log(JSON.stringify(thiz)); // The this-context of the method being called.
+    console.log(JSON.stringify(args)); // The arguments provided to method.
+    
+    if (id === 'Foo.hello') {
+        switch (whereToRun) {
+            case 'locally': return null; // A falsy return value makes it run locally.
+            case 'worker': return msg => worker.postMessage(msg);
+            case 'server': return msg => socket.emit('remotable', msg);
+        }
+    }
+});
+
+```
