@@ -179,16 +179,20 @@ remotable.configure ({
 ```
 
 ### Remarks
-Configures how to channel remoting messages to the role. Must be done in combination with listening for a backchannel.
+Configures where (and if) to emit a remoting message to that role. If a role is not configured, messages to it will be served locally. When configuring a remote role, a listener must also be configured, see sample below.
+
+The msg parameter is just a JSON string that you don't need to interpret. You just provide a channel where to emit it. When message reaches the remote node, that one will pick it up and send it to `remotable.handle()` that will be able to parse the message, execute it and respond to it when its Promise resolves.
 
 ### Sample
 
 ```js
 var worker = new Worker('./worker.js');
+// Configure the listener:
 worker.onmessage = ev => remotable.handle(ev.data);
 
 remotable.configure({
     roles: {
+        // Configure the emitter:
         worker: msg => worker.postMessage(msg)
 });
 ```js
