@@ -33,9 +33,9 @@ Rules:
 
 1. A @remotable method must return a Promise or Promise-like object (thenable).
 2. A @remotable is identified by class and method name or just function name if not a method.
-3. When a @remotable function is invoked, remotable.decide(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
-4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.decide callback.
-5. Configuring the Remoting environment is done by subscriboing to remotable.decide: `remotable.decide(callback)`.
+3. When a @remotable function is invoked, remotable.onroute(options, methodName, func, thiz, args) is called. If it returns a falsy value, the function will run locally as if not beeing decorated. If a function is returned, the call will be proxied via the returned channeling function.
+4. @remotable() may be used with or without an options arguments `@remotable(options)`. Options argument passed to the decorator will be forwarded to any registered remotable.onroute callback.
+5. Configuring the Remoting environment is done by subscriboing to remotable.onroute: `remotable.onroute(callback)`.
 6. Return value from a @remotable function must be able to JSON-serialize, or otherwise be serializable by a registered type registered through `remotable.registerType(typeID: string, tester: any => boolean, replacer: any => any, reviver: any => any)`.
 7. Special built-in support for Observable-like objects - objects with a subscribe method - will be handled specifically:
 
@@ -66,7 +66,7 @@ socket.on('remotable', msg => remotable.handle(msg));
 
 var whereToRun; // To change dynamically
 
-remotable.decide((options, id, func, thiz, args) => {
+remotable.onroute((options, id, func, thiz, args) => {
     if (id === 'Foo.hello') {
         switch (whereToRun) {
             case 'locally': return false; // Will make it run locally.
@@ -130,7 +130,7 @@ http.listen(3000);
 ```
 
 # Options
-The options argument `@remotable(options)` can be used with custom options to be read from the decide() callback. However, there are a few built-in options to use for simplicity:
+The options argument `@remotable(options)` can be used with custom options to be read from the onroute() callback. However, there are a few built-in options to use for simplicity:
 
 ## runat
 ```js
@@ -223,13 +223,13 @@ remotable.configure({
 
 ```
 
-## remotable.decide
+## remotable.onroute
 
-Register a callback that decides if a method should run local or remote, and provides a channel to execute it remotely. This method is a lower-level version of remotable.configure({roles: {...}).
+Register a callback that onroutes if a method should run local or remote, and provides a channel to execute it remotely. This method is a lower-level version of remotable.configure({roles: {...}).
 
 ### Syntax
 ```ts
-remotable.decide(callback: (
+remotable.onroute(callback: (
     options: Object,    // Options provided to @remotable(options)
     id: string,         // ClassName + "." + methodName (or id provided in options)
     func: Function,     // Function to be called (method)
@@ -242,7 +242,7 @@ remotable.decide(callback: (
 ### Sample
 
 ```js
-remotable.decide((options, id, func, thiz, args) => {
+remotable.onroute((options, id, func, thiz, args) => {
     console.log(JSON.stringify(options)); // For example {"runat": "server"}
     console.log(id); // For example "Foo.hello"
     console.log(func.name); // For example "hello".
