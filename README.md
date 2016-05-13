@@ -20,7 +20,7 @@ This is a work in progress. Code is complete but not tested at all. Documentatio
 
 This sample illustrates some piece of isomorphic code that sometimes should run on the server (node), sometimes in the browser, and sometimes in a Web Worker or Service Worker.
 
-### `hello.js`
+### Library code (common) `hello.js`
 
 ```js
 
