@@ -229,7 +229,14 @@ Register a callback that decides if a method should run local or remote, and pro
 
 ### Syntax
 ```ts
-remotable.decide(callback: (options: Object, id: string, func: Function, thiz: any, args: any[]) => (msg:string) => void;
+remotable.decide(callback: (
+    options: Object,    // Options provided to @remotable(options)
+    id: string,         // ClassName + "." + methodName (or id provided in options)
+    func: Function,     // Function to be called (method)
+    thiz: any,          // This-context
+    args: any[]         // arguments
+) =>
+    (msg:string) => void;   // Return a callback taking a string and emitting it to the remote party.
 ```
 
 ### Sample
