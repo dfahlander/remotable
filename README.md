@@ -166,6 +166,16 @@ remotable.configure ({
 
 All standard JSON types are served by default. But when in need of serializing complex types better than plain JSON can do, it's possible to register a type and provide a way to replace and revive it through the JSON channel. 
 
+### Sample (built-in type actually):
+
+```js
+remotable.registerType (
+    "Date",
+    value => value instanceof Date, // tester
+    value => value.getTime(),       // replacer
+    value => new Date(value));      // reviver
+```
+
 ### Syntax
 ```ts
 remotable.registerType (
@@ -174,15 +184,6 @@ remotable.registerType (
     replacer: (value: any) => any,
     reviver: (value: any) => any
 );
-```
-### Sample (built-in type actually):
-
-```js
-remotable.registerType (
-    "Date",
-    value => value instanceof Date,
-    value => value.getTime(),
-    value => new Date(value));
 ```
 
 ## remotable.configure
