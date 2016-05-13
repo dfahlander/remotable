@@ -166,7 +166,7 @@ remotable.configure ({
 
 All standard JSON types are served by default. But when in need of serializing complex types better than plain JSON can do, it's possible to register a type and provide a way to replace and revive it through the JSON channel. 
 
-### Sample (built-in type actually):
+### Sample
 
 ```js
 remotable.registerType (
