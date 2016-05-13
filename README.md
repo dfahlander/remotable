@@ -38,6 +38,37 @@ new Foo().hello("David"); // Runs locally and returns "Hello David" because we h
 
 ```
 
+### `worker.js`
+
+```js
+import remotable from 'remotable';
+import {Foo} from './hello';
+
+onmessage = ev => {
+    remotable.handle(ev.data, response => postMessage(response));
+}
+
+```
+
+### Server
+```js
+import remotable from 'remotable';
+import {Foo} from './hello';
+
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+io.on('connection', function(socket){
+    socket.on('remotable', function(msg){
+        remotable.handle(msg, response => socket.emit(response);
+    });  
+});
+
+http.listen(3000);
+
+```
+
 ### Browser Code
 
 This sample calls the hello function locally, on worker and on server and in all three cases alerts the result. Even though the 'remotable' library knows nothing about Web Workers or socket.io, it is dead simple to configure those as channels because remotable is only interesting in a function that delivers a message and to be called back when a response comes back. The library will make sure to not mix up responses because it has a unique ID for each request to match on when response comes in.
@@ -89,36 +120,6 @@ foo.hello ("David").then(greeting => {
 
 ```
 
-### `worker.js`
-
-```js
-import remotable from 'remotable';
-import {Foo} from './hello';
-
-onmessage = ev => {
-    remotable.handle(ev.data, response => postMessage(response));
-}
-
-```
-
-### Server
-```js
-import remotable from 'remotable';
-import {Foo} from './hello';
-
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
-io.on('connection', function(socket){
-    socket.on('remotable', function(msg){
-        remotable.handle(msg, response => socket.emit(response);
-    });  
-});
-
-http.listen(3000);
-
-```
 
 # Rules:
 
