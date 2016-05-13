@@ -16,7 +16,7 @@ import remotable from 'remotable';
 export class Foo {
 
     @remotable() // Optionally provide an options argument, such as @remotable({runat: 'worker'})
-    async function hello (name) {
+    async hello (name) {
         return `Hello ${name}!`;
     }
 }
@@ -122,3 +122,71 @@ io.on('connection', function(socket){
 http.listen(3000);
 
 ```
+
+# Options
+The options argument `@remotable(options)` can be used with custom options to be read from the decide() callback. However, there are a few built-in options to use for simplicity:
+
+## runat
+```js
+@remotable({runat: 'server'})
+async hello() {...}
+```
+In combination with having configured remotable like this:
+
+```js
+remotable.configure ({
+    local: null,
+    server: msg => socket.emit('remotable', msg),
+    worker: msg => worker.postMessage(msg)
+});
+```
+... will make the function always run on server.
+
+# API
+
+## remotable.registerType
+
+### Syntax
+```ts
+remotable.registerType (
+    typeId: string,
+    tester: (value: any) => boolean,
+    replacer: (value: any) => any,
+    reviver: (value: any) => any
+);
+```
+### Sample (built-in type actually):
+
+```js
+remotable.registerType (
+    "Date",
+    value => value instanceof Date,
+    value => value.getTime(),
+    value => new Date(value));
+```
+
+## remotable.configure
+
+### Syntax
+```ts
+remotable.configure ({
+    roles: {
+        [role:string]: (msg:string) => void
+    }
+});
+```
+
+### Remarks
+Configures how to channel remoting messages to the role. Must be done in combination with listening for a backchannel.
+
+### Sample
+
+```js
+var worker = new Worker('./worker.js');
+worker.onmessage = ev => remotable.handle(ev.data);
+
+remotable.configure({
+    roles: {
+        worker: msg => worker.postMessage(msg)
+});
+```js
