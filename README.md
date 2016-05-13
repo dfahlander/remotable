@@ -34,7 +34,7 @@ export class Foo {
     }
 }
 
-new Foo().hello("David"); // Runs locally and returns "Hello David"
+new Foo().hello("David"); // Runs locally and returns "Hello David" because we havent configured remoteable yet.
 
 ```
 
