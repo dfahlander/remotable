@@ -193,9 +193,11 @@ remotable.registerType (
 ### Syntax
 ```ts
 remotable.configure ({
-    roles: {
+    roles?: {
         [role:string]: (msg:string) => void
-    }
+    },
+    Promise?: new ((resove, reject)=>void) => Promise,
+    Observable?: new ((next, error, complete) => ()=>void) => Observable
 });
 ```
 
