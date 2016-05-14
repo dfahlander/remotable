@@ -258,13 +258,18 @@ remotable.onroute(callback: (
 
 // In the bootstrap code for your browser app:
 
-var worker = new Worker('./worker.js');
+// worker.js will importScript(same decorated methods) and in its main, forward onmessage=>remotable.handle()
+var worker = new Worker('./worker.js'); 
 worker.onmessage = ev =>
     remotable.handle(ev.data);
-    
+
+// Server will also include the same decorated methods and in its main,
+// forward incomping io packages to remotable.handle()    
 var socket = io('http://localhost:3000/');
 socket.on('remotable', msg =>
     remotable.handle(msg));
+
+var whereToRun = 'server'; // Just testing something...
 
 remotable.onroute((options, id, func, thiz, args) => {
     console.log(JSON.stringify(options)); // For example {"runat": "server"}
