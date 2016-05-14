@@ -1,9 +1,10 @@
 # @remotable
-The smallest and prettiest way to declare isomorphic javascript code or code that may run on a remote location such as nodejs, web worker, service worker or within a postgres database engine.
+A small and pretty way to declare javascript functions that may be invoked elsewhere, such as on a Node.JS server, a Web Worker, a Service Worker or another iframe of alternate origin.
 
 In short:
 
-* An ES7 decorator `@remotable` makes a method possible to invoke remotely and at the same time registered for serving it to clients.
+* An ES7 decorator `@remotable` makes a method possible to invoke remotely.
+* Include the same decorated method both in browser, worker, node etc.
 * Can also be used also in ES5/ES6 by preceding function as `var myFunction = remotable(options, function (a,b,c) {...});`
 * No dependencies.
 
