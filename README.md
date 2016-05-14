@@ -255,6 +255,17 @@ remotable.onroute(callback: (
 ### Sample
 
 ```js
+
+// In the bootstrap code for your browser app:
+
+var worker = new Worker('./worker.js');
+worker.onmessage = ev =>
+    remotable.handle(ev.data);
+    
+var socket = io('http://localhost:3000/');
+socket.on('remotable', msg =>
+    remotable.handle(msg));
+
 remotable.onroute((options, id, func, thiz, args) => {
     console.log(JSON.stringify(options)); // For example {"runat": "server"}
     console.log(id); // For example "Foo.hello"
