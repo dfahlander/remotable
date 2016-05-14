@@ -5,6 +5,7 @@ In short:
 
 * An ES7 decorator `@remotable` makes a method possible to invoke remotely.
 * Include the same decorated method both in browser, worker, node etc.
+* Each platform use a few lines of bootstrap code to configure where other nodes are located and how to reach them.
 * Can also be used also in ES5/ES6 by preceding function as `var myFunction = remotable(options, function (a,b,c) {...});`
 * No dependencies.
 
