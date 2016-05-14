@@ -196,8 +196,8 @@ remotable.configure ({
     roles?: {
         [role:string]: (msg:string) => void
     },
-    Promise?: new ((resove, reject)=>void) => Promise,
-    Observable?: new ((next, error, complete) => ()=>void) => Observable
+    Promise?: Function, // An A+ compatible Promise constructor
+    Observable?: new ((next, error, complete) => (()=>void | {dispose: ()=>void})) => Object
 });
 ```
 
@@ -233,7 +233,9 @@ remotable.configure({
         db: msg => isOffline ?
             worker.postMessage(msg) : // If offline, use a local database served from Web worker
             socket.emit('remotable', msg), // If online, use backend database
-    }
+    },
+    Promise: require('bluebird'),
+    Observable: Rx.Observable
 });
 
 ```
