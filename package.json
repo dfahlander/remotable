@@ -16,8 +16,8 @@
     "url": "https://github.com/dfahlander/remotable/issues"
   },
   "homepage": "https://github.com/dfahlander/remotable#readme",
-  "dependencies": {
+  "devDependencies": {
     "jasmine": "^2.4.1",
     "typescript": "^1.8.10"
-  }  
+  }
 }
