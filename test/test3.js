@@ -7,19 +7,21 @@ function hello (name) {
     }); 
 }
 
-hello = remotable(hello, {});
+//hello = remotable(hello, {});
 
 var clientChannel = new Channel (channel => {
-    return msg => {
+    channel.onsend(msg => {
         console.log("clientChannel called");
         setTimeout(()=>{
             console.log("clientChannel forwarding to serverChannel.handle()");
             serverChannel.handle (msg);
         }, 0);
-    } 
+    });
+    channel.onclose(()=>serverChannel.close());
 });
 var serverChannel = new Channel (channel => {
-    return msg => setTimeout(()=>clientChannel.handle (msg), 0);
+    channel.onsend (msg => setTimeout(()=>clientChannel.handle (msg), 0));
+    channel.onclose (()=> clientChannel.close());
 });
 
 var channel;
